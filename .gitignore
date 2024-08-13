@@ -1,6 +1,7 @@
 *.py[cod]
 .*
 !.devcontainer
+.base_ver_release.txt
 !.dockerignore
 !.github
 !.gitignore
