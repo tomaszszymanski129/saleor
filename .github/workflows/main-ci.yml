@@ -1,0 +1,11 @@
+name: Test of action after merge release
+on:
+  pull_request:
+    branches: [main]
+    types: [labeled, closed]
+
+jobs:
+  build-push-site:
+    if: github.event.pull_request.merged == true && contains( github.event.pull_request.labels.*.name, 'release')
+    steps:
+      - run: echo "Release PR is merged!"
