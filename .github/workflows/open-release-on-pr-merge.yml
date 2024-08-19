@@ -1,7 +1,7 @@
-name: Create tag and release on release PR merge
+name: Open release on PR merged if it was labeled release.
 on:
   pull_request:
-    types: 
+    types:
      - closed
 
 jobs:
@@ -13,15 +13,4 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_ENV
-      - name: Create tag
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ env.PR_TAG_REF }}",
-              sha: context.sha
-            })
       - run: "gh release create $PR_TAG_REF --repo=$GITHUB_REPOSITORY --generate-notes --draft --verify-tag"
-  
