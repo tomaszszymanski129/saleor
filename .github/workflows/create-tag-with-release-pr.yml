@@ -28,4 +28,4 @@ jobs:
   testflow:
     uses: ./.github/workflows/testflow.yml
     with:
-      version: $PR_TAG_REF
+      version: "$PR_TAG_REF"
