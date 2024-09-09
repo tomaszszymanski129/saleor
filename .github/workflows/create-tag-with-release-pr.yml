@@ -25,3 +25,7 @@ jobs:
             })
       - run: |
           gh release create "$PR_TAG_REF" --repo="$GITHUB_REPOSITORY" --generate-notes --draft --verify-tag
+  testflow:
+    uses: ./.github/workflows/testflow.yml
+    with:
+      version: ${{ process.env.PR_TAG_REF }}
