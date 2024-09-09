@@ -5,15 +5,6 @@ on:
      - closed
 
 jobs:
-  prepare-tag:
-    runs-on: ubuntu-latest
-    env:
-      GH_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Prepare release tag version
-        id: prepare-tag
-        run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
-
   run-release-trigger:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
@@ -21,6 +12,9 @@ jobs:
       GH_REF: ${{ github.event.pull_request.head.ref }}
       GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Prepare release tag version
+        id: prepare-tag
+        run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
       - name: Create tag
         uses: actions/github-script@v5
         with:
@@ -37,7 +31,12 @@ jobs:
   testflow:
     runs-on: ubuntu-latest
     name: hope this works
+    env:
+      GH_REF: ${{ github.event.pull_request.head.ref }}
     steps:
+      - name: Prepare release tag version
+        id: prepare-tag-v
+        run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
       - uses: ./.github/workflows/testflow.yml
         with:
-          version: "${{ steps.prepare-tag.outputs.PR_TAG_REF }}"
+          version: "${{ steps.prepare-tag-v.outputs.PR_TAG_REF }}"
