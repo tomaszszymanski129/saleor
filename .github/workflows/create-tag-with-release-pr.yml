@@ -36,12 +36,14 @@ jobs:
     env:
       GH_REF: ${{ github.event.pull_request.head.ref }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Prepare release tag version
         id: prepare-tag-v
         run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: "${{ steps.prepare-tag-v.outputs.PR_TAG_REF }}"
       - name: Run publish workflow with version
-        uses: ./.github/workflows/my-flow
+        uses: ./.github/workflows/my-flow.yml
         with:
           version: "${{ steps.prepare-tag-v.outputs.PR_TAG_REF }}"
