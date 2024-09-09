@@ -5,6 +5,15 @@ on:
      - closed
 
 jobs:
+  prepare-tag:
+    runs-on: ubuntu-latest
+    env:
+      GH_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Prepare release tag version
+        id: prepare-tag
+        run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
+
   run-release-trigger:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
@@ -12,7 +21,6 @@ jobs:
       GH_REF: ${{ github.event.pull_request.head.ref }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_ENV
       - name: Create tag
         uses: actions/github-script@v5
         with:
@@ -20,12 +28,16 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/${process.env.PR_TAG_REF}`,
+              ref: `refs/tags/${steps.prepare-tag.outputs.PR_TAG_REF}`,
               sha: context.sha
             })
       - run: |
-          gh release create "$PR_TAG_REF" --repo="$GITHUB_REPOSITORY" --generate-notes --draft --verify-tag
+          gh release create "${{ steps.prepare-tag.outputs.PR_TAG_REF }}" --repo="$GITHUB_REPOSITORY" --generate-notes --draft --verify-tag
+  
   testflow:
-    uses: ./.github/workflows/testflow.yml
-    with:
-      version: ${{ PR_TAG_REF }}
+    runs-on: ubuntu-latest
+    name: hope this works
+    steps:
+      - uses: ./.github/workflows/testflow.yml
+        with:
+          version: "${{ steps.prepare-tag.outputs.PR_TAG_REF }}"
