@@ -28,22 +28,12 @@ jobs:
       - name: Create github release
         run: |
           gh release create "${{ steps.prepare-tag.outputs.PR_TAG_REF }}" --repo="$GITHUB_REPOSITORY" --generate-notes --draft --verify-tag
-  
+    outputs:
+      version: ${{ steps.prepare-tag.outputs.PR_TAG_REF }}
+
   testflow:
-    runs-on: ubuntu-latest
-    needs: run-release-trigger
-    name: hope this works
-    env:
-      GH_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Prepare release tag version
-        id: prepare-tag-v
-        run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: "${{ steps.prepare-tag-v.outputs.PR_TAG_REF }}"
-      - name: Run publish workflow with version
-        uses: ./.github/workflows/my-flow.yml
-        with:
-          version: "${{ steps.prepare-tag-v.outputs.PR_TAG_REF }}"
+    needs:
+      - run-release-trigger
+    uses: ./.github/workflows/my-flow.yml
+    with:
+      version: ${{ needs.run-release-trigger.outputs.version }}
