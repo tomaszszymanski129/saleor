@@ -22,7 +22,7 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: refs/tags/${{ steps.prepare-tag.outputs.PR_TAG_REF }},
+              ref: "refs/tags/${{ steps.prepare-tag.outputs.PR_TAG_REF }}",
               sha: context.sha
             })
       - run: |
