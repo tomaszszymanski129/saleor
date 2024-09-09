@@ -25,7 +25,8 @@ jobs:
               ref: "refs/tags/${{ steps.prepare-tag.outputs.PR_TAG_REF }}",
               sha: context.sha
             })
-      - run: |
+      - name: Create github release
+        run: |
           gh release create "${{ steps.prepare-tag.outputs.PR_TAG_REF }}" --repo="$GITHUB_REPOSITORY" --generate-notes --draft --verify-tag
   
   testflow:
@@ -37,7 +38,9 @@ jobs:
       - name: Prepare release tag version
         id: prepare-tag-v
         run: echo "PR_TAG_REF=$GH_REF" | sed "s/release-//" >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: run flow
-        uses: ./.github/workflows/testflow.yml
+        uses: ./.github/workflows/my-flow.yml
         with:
           version: "${{ steps.prepare-tag-v.outputs.PR_TAG_REF }}"
