@@ -14,5 +14,5 @@ jobs:
     steps:
       - name: hehe
         env:
-          VERSION_TAG: ${{ inputs.prefix }}
+          VERSION_TAG: ${{ inputs.version }}
         run: echo "$VERSION_TAG"
