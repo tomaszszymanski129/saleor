@@ -54,8 +54,7 @@
       ],
       "after:release": [
         "git push origin release-${version}",
-        "echo $changelog > .release_body.txt",
-        "gh pr create --base `cat .base_ver_release.txt` --head release-${version} --title \"Release ${version}\" --body-file .release_body.txt --label release --assignee @me"
+        "gh pr create --base `cat .base_ver_release.txt` --head release-${version} --title \"Release ${version}\" --body '${changelog}' --label release --assignee @me"
       ]
     }
   }
