@@ -53,8 +53,9 @@
         "git checkout -B release-${version} --track"
       ],
       "after:release": [
-        "git push origin release-${version}",
-        "gh pr create --base `cat .base_ver_release.txt` --head release-${version} --title \"Release ${version}\" --body '${changelog}' --label release --assignee @me"
+        "npx release-it --changelog > .changes.txt",
+        "gh pr create --base `cat .base_ver_release.txt` --head release-${version} --title \"Release ${version}\" --body-file '.changes.txt' --label release --assignee @me",
+        "rm .changes.txt .base_ver_release.txt"
       ]
     }
   }
